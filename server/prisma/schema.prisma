@@ -1,0 +1,55 @@
+datasource postgres {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  createdAt DateTime @default(now())
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+model Recipe {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  steps     Step[]
+  updatedAt DateTime @updatedAt
+}
+
+model Step {
+  createdAt       DateTime         @default(now())
+  id              String           @id @default(cuid())
+  positon         Int
+  recipe          Recipe?          @relation(fields: [recipeId], references: [id])
+  recipeId        String?
+  StepIngredients StepIngredient[]
+  updatedAt       DateTime         @updatedAt
+}
+
+model Ingredient {
+  createdAt    DateTime         @default(now())
+  id           String           @id @default(cuid())
+  schrittzutat StepIngredient[]
+  updatedAt    DateTime         @updatedAt
+}
+
+model StepIngredient {
+  amount       Float
+  createdAt    DateTime   @default(now())
+  id           String     @id @default(cuid())
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  ingredientId String
+  step         Step       @relation(fields: [stepId], references: [id])
+  stepId       String
+  unit         String?
+  updatedAt    DateTime   @updatedAt
+}
